@@ -46,7 +46,7 @@ Em seguida, rode o script <strong style="font-style: italic;">treatment.py</stro
   <pre align=center>python3 main.py</pre>
 </li>
 <li>
-Caso queria rodar no <a hrf="https://colab.research.google.com/drive/1F16GMHFrCYPHR8Q6OxPNdnujEl_kE7i3?usp=sharing">Google Colab</a>
+Caso queria rodar no <a href="https://colab.research.google.com/drive/1F16GMHFrCYPHR8Q6OxPNdnujEl_kE7i3?usp=sharing">Google Colab</a>
 </li>
 <br>
 <hr>
