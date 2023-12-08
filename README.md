@@ -1,4 +1,5 @@
-<img  style="display: block; margin: 0 auto"  width=200px heigth=200px src="brasao.gif" alt="Brasão Universidade Federal de Viçosa" />
+<p align= center>
+<img  style="display: block; margin: 0 auto"  width=200px heigth=200px src="brasao.gif" alt="Brasão Universidade Federal de Viçosa" /></p>
 
 <h1 style="text-align: center;">Universidade Federal de Viçosa</h1>
 
@@ -15,3 +16,6 @@
 </p>
 </p>
 <hr> <br>
+
+#1. Objetivo:
+<p>O presente trabalho tem como objetivo desenvolver um sistema de visão para classificação de grãos de café entre maduros e verdes. Propõe-se a implementação de técnicas avançadas de processamento de imagens e aprendizado de máquina para avaliar a maturação dos grãos de café, buscando a classificação automática em "maduros" ou "imaturos". O modelo de aprendizado de máquina será baseado em técnicas de visão computacional.O objetivo central é fornecer uma ferramenta precisa e objetiva aos produtores para avaliar a qualidade dos grãos em tempo real. Isso contribuirá para otimizar o processo de seleção, melhorar a produção</p>
