@@ -20,234 +20,234 @@ from PIL import Image, ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-def initialize_model(model_name, num_classes):
-    model = None
-    input_size = 0
+def inicializar_modelo(nome_modelo, num_classes):
+    modelo = None
+    tamanho_entrada = 0
 
-    if model_name == "alexnet":
-        model = models.alexnet(weights='DEFAULT')
-        num_ftrs = model.classifier[6].in_features
-        model.classifier[6] = nn.Linear(num_ftrs, num_classes)
-        input_size = 224
+    if nome_modelo == "alexnet":
+        modelo = models.alexnet(weights='DEFAULT')
+        num_ftrs = modelo.classifier[6].in_features
+        modelo.classifier[6] = nn.Linear(num_ftrs, num_classes)
+        tamanho_entrada = 224
 
-    elif model_name == "vgg":
-        model = models.vgg16(weights='DEFAULT')
-        num_ftrs = model.classifier[6].in_features
-        model.classifier[6] = nn.Linear(num_ftrs, num_classes)
-        input_size = 224
+    elif nome_modelo == "vgg":
+        modelo = models.vgg16(weights='DEFAULT')
+        num_ftrs = modelo.classifier[6].in_features
+        modelo.classifier[6] = nn.Linear(num_ftrs, num_classes)
+        tamanho_entrada = 224
 
     else:
-        print("Invalid model name, exiting...")
+        print("Nome de modelo inválido, saindo...")
         exit()
 
-    return model, input_size
+    return modelo, tamanho_entrada
 
+def treinar_modelo(modelo, dataloaders, otimizador, parametros_basicos, fold, data_atual, dispositivo='gpu'):
+    desde = time.time()
 
-def train_model(model, dataloaders, optimizer, basic_parameters, fold, date_now, device='gpu'):
-    since = time.time()
+    melhores_pesos_modelo = copy.deepcopy(modelo.state_dict())
+    melhor_acuracia = 0.0
+    melhor_perda = float('inf')
 
-    best_model_wts = copy.deepcopy(model.state_dict())
-    best_acc = 0.0
-    best_loss = float('inf')
+    # Listas para armazenar perdas e acurácias
+    perda_treino_lista = []
+    acuracia_treino_lista = []
+    perda_val_lista = []
+    acuracia_val_lista = []
 
-    train_loss_list = []
-    train_acc_list = []
-    val_loss_list = []
-    val_acc_list = []
+    nome_modelo = parametros_basicos.get('model_name')
+    num_epochs = parametros_basicos.get('epochs')
+    tamanho_batch = parametros_basicos.get('batch_size')
 
-    model_name = basic_parameters.get('model_name')
-    num_epochs = basic_parameters.get('epochs')
-    batch_size = basic_parameters.get('batch_size')
+    diretorio_saida = r'outputs/' + nome_modelo
+    os.makedirs(diretorio_saida, exist_ok=True)
 
-    output_dir = r'outputs/' + model_name
-    os.makedirs(output_dir, exist_ok=True)
+    diretorio_resultado = diretorio_saida + '\\' + nome_modelo + '_' + data_atual
+    os.makedirs(diretorio_resultado, exist_ok=True)
 
-    result_dir = output_dir + '\\' + model_name + '_' + date_now
-    os.makedirs(result_dir, exist_ok=True)
+    arquivo = open(f'{diretorio_resultado}/{nome_modelo}_fold_{fold}.txt', 'w')
 
-    f = open(f'{result_dir}/{model_name}_fold_{fold}.txt', 'w')
+    for epoca in range(num_epochs):
+        arquivo.write(f'Época {epoca}/{num_epochs - 1}\n')
+        arquivo.write('-' * 10 + '\n')
 
-    for epoch in range(num_epochs):
-        f.write(f'Epoch {epoch}/{num_epochs - 1}\n')
-        f.write('-' * 10 + '\n')
-
-        print(f'Epoch {epoch}/{num_epochs - 1}')
+        print(f'Época {epoca}/{num_epochs - 1}')
         print('-' * 10)
 
-        for phase in ['train', 'val']:
-            time_epoch_start = time.time()
+        for fase in ['treino', 'val']:
+            tempo_epoca_inicio = time.time()
 
-            if phase == 'train':
-                model.train()
+            if fase == 'treino':
+                modelo.train()
             else:
-                model.eval()
+                modelo.eval()
 
-            running_loss = 0.0
-            running_corrects = 0
+            perda_atual = 0.0
+            acertos_atual = 0
 
-            for inputs, labels in dataloaders[phase]:
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+            for entradas, rotulos in dataloaders[fase]:
+                entradas = entradas.to(dispositivo)
+                rotulos = rotulos.to(dispositivo)
 
-                model.to(device)
+                modelo.to(dispositivo)
 
-                optimizer.zero_grad()
+                otimizador.zero_grad()
 
-                with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs)
-                    loss = basic_parameters.get('criterion')(outputs, labels)
+                with torch.set_grad_enabled(fase == 'treino'):
+                    saidas = modelo(entradas)
+                    perda = parametros_basicos.get('criterion')(saidas, rotulos)
 
-                    _, preds = torch.max(outputs, 1)
+                    _, previsoes = torch.max(saidas, 1)
 
-                    if phase == 'train':
-                        loss.backward()
-                        optimizer.step()
+                    if fase == 'treino':
+                        perda.backward()
+                        otimizador.step()
 
-                running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
+                perda_atual += perda.item() * entradas.size(0)
+                acertos_atual += torch.sum(previsoes == rotulos.data)
 
-            epoch_loss = running_loss / len(dataloaders[phase].dataset)
-            epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+            perda_epoca = perda_atual / len(dataloaders[fase].dataset)
+            acuracia_epoca = acertos_atual.double() / len(dataloaders[fase].dataset)
 
-            time_epoch = time.time() - time_epoch_start
+            tempo_epoca = time.time() - tempo_epoca_inicio
 
-            f.write(f'{phase.capitalize()} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f} ({time_epoch:.4f} seconds) \n')
+            arquivo.write(f'{fase.capitalize()} Perda: {perda_epoca:.4f} Acurácia: {acuracia_epoca:.4f} ({tempo_epoca:.4f} segundos) \n')
 
-            print(f'{phase.capitalize()} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f} ({time_epoch:.4f} seconds)')
+            print(f'{fase.capitalize()} Perda: {perda_epoca:.4f} Acurácia: {acuracia_epoca:.4f} ({tempo_epoca:.4f} segundos)')
 
-            if phase == 'train':
-                train_loss_list.append(epoch_loss)
-                train_acc_list.append(epoch_acc)
+            if fase == 'treino':
+                perda_treino_lista.append(perda_epoca)
+                acuracia_treino_lista.append(acuracia_epoca)
             else:
-                val_loss_list.append(epoch_loss)
-                val_acc_list.append(epoch_acc)
+                perda_val_lista.append(perda_epoca)
+                acuracia_val_lista.append(acuracia_epoca)
 
-            if phase == 'val' and epoch_loss < best_loss:
-                best_loss = epoch_loss
-                best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
+            if fase == 'val' and perda_epoca < melhor_perda:
+                melhor_perda = perda_epoca
+                melhor_acuracia = acuracia_epoca
+                melhores_pesos_modelo = copy.deepcopy(modelo.state_dict())
 
-        time_epoch = time.time() - since
+        tempo_epoca = time.time() - desde
 
-        f.write(f'Time: {time_epoch:.0f}s\n')
-        f.write('\n')
+        arquivo.write(f'Tempo: {tempo_epoca:.0f}s\n')
+        arquivo.write('\n')
 
-        print(f'Time: {time_epoch:.0f}s')
+        print(f'Tempo: {tempo_epoca:.0f}s')
         print('\n')
 
-    time_elapsed = time.time() - since
-    f.write(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s\n')
-    f.write(f'Number of epochs: {num_epochs}. Batch size: {batch_size}\n')
-    f.write(f'Best val loss: {best_loss:.4f} Best val acc: {best_acc:.4f}\n')
+    tempo_total = time.time() - desde
+    arquivo.write(f'Treinamento completo em {tempo_total // 60:.0f}m {tempo_total % 60:.0f}s\n')
+    arquivo.write(f'Número de épocas: {num_epochs}. Tamanho do batch: {tamanho_batch}\n')
+    arquivo.write(f'Melhor perda de validação: {melhor_perda:.4f} Melhor acurácia de validação: {melhor_acuracia:.4f}\n')
 
-    print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
-    print(f'Best val loss: {best_loss:.4f} Best val acc: {best_acc:.4f}')
+    print(f'Treinamento completo em {tempo_total // 60:.0f}m {tempo_total % 60:.0f}s')
+    print(f'Melhor perda de validação: {melhor_perda:.4f} Melhor acurácia de validação: {melhor_acuracia:.4f}')
 
-    y_true, y_pred = evaluate_model(model, dataloaders['val'], device=device)
-    conf_mat_val = metrics.confusion_matrix(y_true, y_pred)
-    f.write(f'\nConfusion Matrix:\n{conf_mat_val}\n')
+    y_true, y_pred = avaliar_modelo(modelo, dataloaders['val'], dispositivo=dispositivo)
+    matriz_confusao_val = metrics.confusion_matrix(y_true, y_pred)
+    arquivo.write(f'\nMatriz de Confusão:\n{matriz_confusao_val}\n')
 
-    class_rep_val = generate_classification_report(model, dataloaders['val'],
-                                                   basic_parameters.get('class_names'), device)
-    f.write(f'\nClassification report:\n{class_rep_val}\n')
+    relatorio_classes_val = gerar_relatorio_classificacao(modelo, dataloaders['val'],
+                                                   parametros_basicos.get('class_names'), dispositivo)
+    arquivo.write(f'\nRelatório de Classificação:\n{relatorio_classes_val}\n')
 
-    f.close()
+    arquivo.close()
 
     plt.figure()
-    plot_confusion_matrix(conf_mat_val, classes=basic_parameters.get('class_names'))
-    plt.savefig(f'{result_dir}/{model_name}_fold_{fold}_cf_mat.pdf')
+    plotar_matriz_confusao(matriz_confusao_val, classes=parametros_basicos.get('class_names'))
+    plt.savefig(f'{diretorio_resultado}/{nome_modelo}_fold_{fold}_matriz_confusao.pdf')
 
-    plot_loss_accuracy(train_loss_list, val_loss_list, train_acc_list, val_acc_list, model_name, fold, result_dir)
+    plotar_perda_acuracia(perda_treino_lista, perda_val_lista, acuracia_treino_lista, acuracia_val_lista, nome_modelo, fold, diretorio_resultado)
 
-    model.load_state_dict(best_model_wts)
-    return model
+    modelo.load_state_dict(melhores_pesos_modelo)
+    return modelo
 
-
-
-def evaluate_model(model, dataloader, device):
+def avaliar_modelo(modelo, dataloader, dispositivo):
     y_true = []
     y_pred = []
-    correct = 0
+    corretas = 0
     total = 0
-    model.eval()
-    
+    modelo.eval()
+
     with torch.no_grad():
-        for inputs, labels in dataloader:
-            inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-            y_true += labels.tolist()
-            y_pred += predicted.tolist()
+        for entradas, rotulos in dataloader:
+            entradas, rotulos = entradas.to(dispositivo), rotulos.to(dispositivo)
+            saidas = modelo(entradas)
+            _, previsto = torch.max(saidas.data, 1)
+            total += rotulos.size(0)
+            corretas += (previsto == rotulos).sum().item()
+            y_true += rotulos.tolist()
+            y_pred += previsto.tolist()
 
     return y_true, y_pred
 
-def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blues):
+def plotar_matriz_confusao(cm, classes, titulo='Matriz de Confusão', cmap=plt.cm.Blues):
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
+    plt.title(titulo)
     plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
+    marcas_eixo_x = np.arange(len(classes))
+    plt.xticks(marcas_eixo_x, classes, rotation=45)
+    plt.yticks(marcas_eixo_x, classes)
 
-    thresh = cm.max() / 2.
+    limite = cm.max() / 2.
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
         plt.text(j, i, cm[i, j],
                  horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
+                 color="white" if cm[i, j] > limite else "black")
 
     plt.tight_layout()
-    plt.ylabel('Class')
-    plt.xlabel('Predicted Class')
+    plt.ylabel('Classe')
+    plt.xlabel('Classe Prevista')
+    plt.show()
 
-def plot_loss_accuracy(train_losses, val_losses, train_accs, val_accs, model_name, fold, save_dir):
-    epochs = len(train_losses)
-    x = range(1, epochs + 1)
+def plotar_perda_acuracia(perda_treino, perda_val, acuracia_treino, acuracia_val, nome_modelo, fold, diretorio_salvar):
+    epocas = len(perda_treino)
+    x = range(1, epocas + 1)
 
     plt.figure(figsize=(10, 5))
-    
+
     plt.subplot(1, 2, 1)
-    plt.plot(x, train_losses, c='red', ls='-', label='Train loss', fillstyle='none')
-    plt.plot(x, val_losses, c='blue', ls='--', label='Val. loss', fillstyle='none')
-    plt.title('Loss')
+    plt.plot(x, perda_treino, c='red', ls='-', label='Perda no treino', fillstyle='none')
+    plt.plot(x, perda_val, c='blue', ls='--', label='Perda na val.', fillstyle='none')
+    plt.title('Perda')
     plt.legend()
-    
+
     plt.subplot(1, 2, 2)
-    plt.plot(x, [acc.cpu() for acc in train_accs], c='red', ls='-', label='Train accuracy', fillstyle='none')
-    plt.plot(x, [acc.cpu() for acc in val_accs], c='blue', ls='--', label='Val. accuracy', fillstyle='none')
-    plt.title('Accuracy')
+    plt.plot(x, [acc.cpu() for acc in acuracia_treino], c='red', ls='-', label='Acurácia no treino', fillstyle='none')
+    plt.plot(x, [acc.cpu() for acc in acuracia_val], c='blue', ls='--', label='Acurácia na val.', fillstyle='none')
+    plt.title('Acurácia')
     plt.legend()
 
-    plt.savefig(f'{save_dir}/{model_name}_fold_{fold}_loss_acc.pdf')
+    plt.savefig(f'{diretorio_salvar}/{nome_modelo}_fold_{fold}_perda_acuracia.pdf')
+    print(f'{nome_modelo}')
+    plt.show()
 
-def generate_classification_report(model, dataloader, class_names, device='cpu'):
-    model = model.to(device)
-    model.eval()
+def gerar_relatorio_classificacao(modelo, dataloader, nomes_classes, dispositivo='cpu'):
+    modelo = modelo.to(dispositivo)
+    modelo.eval()
 
-    all_preds = torch.tensor([], dtype=torch.long, device=device)
-    all_labels = torch.tensor([], dtype=torch.long, device=device)
+    todas_predicoes = torch.tensor([], dtype=torch.long, device=dispositivo)
+    todos_rotulos = torch.tensor([], dtype=torch.long, device=dispositivo)
 
-    for inputs, labels in dataloader:
-        inputs = inputs.to(device)
-        labels = labels.to(device)
+    for entradas, rotulos in dataloader:
+        entradas = entradas.to(dispositivo)
+        rotulos = rotulos.to(dispositivo)
 
         with torch.no_grad():
-            outputs = model(inputs)
-            _, preds = torch.max(outputs, 1)
+            saidas = modelo(entradas)
+            _, predicoes = torch.max(saidas, 1)
 
-        all_preds = torch.cat((all_preds, preds), dim=0)
-        all_labels = torch.cat((all_labels, labels), dim=0)
+        todas_predicoes = torch.cat((todas_predicoes, predicoes), dim=0)
+        todos_rotulos = torch.cat((todos_rotulos, rotulos), dim=0)
 
-    report = metrics.classification_report(
-        all_labels.cpu().numpy(), all_preds.cpu().numpy(),
-        target_names=class_names, digits=4, zero_division=0
+    relatorio = metrics.classification_report(
+        todos_rotulos.cpu().numpy(), todas_predicoes.cpu().numpy(),
+        target_names=nomes_classes, digits=4, zero_division=0
     )
 
-    return report
+    return relatorio
 
-
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cuda")
 
 SEED = 42
 
@@ -258,58 +258,58 @@ torch.cuda.manual_seed(SEED)
 torch.backends.cudnn.benchmark = True
 torch.backends.cudnn.deterministic = True
 
-train_dir = "C:/DATASET/dataset_treino"
-test_dir = "C:/DATASET/dataset_teste"
+diretorio_treino = "DATASET/dataset_treino"
+diretorio_teste = "DATASET/dataset_teste"
 
-dataset = ImageFolder(test_dir)
+conjunto_dados = ImageFolder(diretorio_teste)
 
 if __name__ == "__main__":
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    print('\nDevice: {0}'.format(device))
-    print(torch.cuda.get_device_name(0))
+    print('\nDispositivo: {0}'.format(device))
+    #print(torch.cuda.get_device_name(0))
 
-    for model in ['alexnet', 'vgg']:
+    for modelo in ['alexnet','vgg']:
         print("***********************************************************************")
-        print(model)
-        basic_parameters = {
-            'num_classes': len(dataset.classes),
-            'class_names': dataset.classes,
+        print(modelo)
+        parametros_basicos = {
+            'num_classes': len(conjunto_dados.classes),
+            'class_names': conjunto_dados.classes,
             'batch_size': 32,
             'lr': 0.001,
             'mm': 0.9,
             'epochs': 15,
-            'model_name': model,
+            'model_name': modelo,
             'criterion': nn.CrossEntropyLoss()
         }
 
-        model_ft, input_size = initialize_model(basic_parameters.get('model_name'), basic_parameters.get('num_classes'))
+        modelo_ft, tamanho_entrada = inicializar_modelo(parametros_basicos.get('model_name'), parametros_basicos.get('num_classes'))
 
-        data_transforms = {
-            'train': transforms.Compose([
-                transforms.Resize([input_size, input_size], antialias=True),
+        transformacoes_dados = {
+            'treino': transforms.Compose([
+                transforms.Resize([tamanho_entrada, tamanho_entrada], antialias=True),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ]),
             'val': transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Resize([input_size, input_size], antialias=True),
+                transforms.Resize([tamanho_entrada, tamanho_entrada], antialias=True),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ]),
         }
 
-        train_dataset = datasets.ImageFolder(train_dir, transform=data_transforms['train'])
-        test_dataset = datasets.ImageFolder(test_dir, transform=data_transforms['val'])
+        conjunto_treino = datasets.ImageFolder(diretorio_treino, transform=transformacoes_dados['treino'])
+        conjunto_teste = datasets.ImageFolder(diretorio_teste, transform=transformacoes_dados['val'])
 
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=basic_parameters.get('batch_size'),
-                                                   shuffle=True, num_workers=4)
-        val_loader = torch.utils.data.DataLoader(test_dataset, batch_size=basic_parameters.get('batch_size'),
-                                                 shuffle=True, num_workers=4)
+        carregador_treino = torch.utils.data.DataLoader(conjunto_treino, batch_size=parametros_basicos.get('batch_size'),
+                                                        shuffle=True, num_workers=4)
+        carregador_val = torch.utils.data.DataLoader(conjunto_teste, batch_size=parametros_basicos.get('batch_size'),
+                                                     shuffle=True, num_workers=4)
 
-        dataloaders_dict = {'train': train_loader, 'val': val_loader}
+        dicionario_dataloaders = {'treino': carregador_treino, 'val': carregador_val}
 
-        optimizer = optim.SGD(model_ft.parameters(), lr=basic_parameters.get('lr'), momentum=basic_parameters.get('mm'))
+        otimizador = optim.SGD(modelo_ft.parameters(), lr=parametros_basicos.get('lr'), momentum=parametros_basicos.get('mm'))
 
-        date_now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        data_atual = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-        model_ft = train_model(model_ft, dataloaders_dict, optimizer, basic_parameters, 1, date_now, device)
+        modelo_ft = treinar_modelo(modelo_ft, dicionario_dataloaders, otimizador, parametros_basicos, 1, data_atual, device)
