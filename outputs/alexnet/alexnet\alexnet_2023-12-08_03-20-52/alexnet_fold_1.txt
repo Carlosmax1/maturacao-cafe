@@ -1,0 +1,108 @@
+Época 0/14
+----------
+Treino Perda: 0.8171 Acurácia: 0.4861 (12.5343 segundos) 
+Val Perda: 0.6675 Acurácia: 0.5278 (1.2167 segundos) 
+Tempo: 14s
+
+Época 1/14
+----------
+Treino Perda: 0.5175 Acurácia: 0.7222 (1.9316 segundos) 
+Val Perda: 0.7555 Acurácia: 0.5556 (1.0618 segundos) 
+Tempo: 17s
+
+Época 2/14
+----------
+Treino Perda: 0.4916 Acurácia: 0.7361 (2.1482 segundos) 
+Val Perda: 0.2887 Acurácia: 0.9444 (1.1871 segundos) 
+Tempo: 20s
+
+Época 3/14
+----------
+Treino Perda: 0.3347 Acurácia: 0.8542 (1.6824 segundos) 
+Val Perda: 0.2261 Acurácia: 0.9167 (1.9345 segundos) 
+Tempo: 24s
+
+Época 4/14
+----------
+Treino Perda: 0.1793 Acurácia: 0.9653 (2.9654 segundos) 
+Val Perda: 0.2079 Acurácia: 0.9444 (1.8152 segundos) 
+Tempo: 29s
+
+Época 5/14
+----------
+Treino Perda: 0.1296 Acurácia: 0.9444 (2.3540 segundos) 
+Val Perda: 0.0995 Acurácia: 0.9444 (0.7375 segundos) 
+Tempo: 32s
+
+Época 6/14
+----------
+Treino Perda: 0.0630 Acurácia: 0.9861 (1.1734 segundos) 
+Val Perda: 0.1635 Acurácia: 0.9444 (0.6256 segundos) 
+Tempo: 34s
+
+Época 7/14
+----------
+Treino Perda: 0.0500 Acurácia: 0.9792 (1.1357 segundos) 
+Val Perda: 0.0599 Acurácia: 0.9722 (0.5913 segundos) 
+Tempo: 35s
+
+Época 8/14
+----------
+Treino Perda: 0.0305 Acurácia: 0.9861 (1.1331 segundos) 
+Val Perda: 0.1343 Acurácia: 0.9722 (0.6087 segundos) 
+Tempo: 37s
+
+Época 9/14
+----------
+Treino Perda: 0.0075 Acurácia: 1.0000 (1.1156 segundos) 
+Val Perda: 0.2874 Acurácia: 0.9444 (0.5825 segundos) 
+Tempo: 39s
+
+Época 10/14
+----------
+Treino Perda: 0.0112 Acurácia: 0.9931 (1.5186 segundos) 
+Val Perda: 0.0822 Acurácia: 0.9722 (0.9546 segundos) 
+Tempo: 41s
+
+Época 11/14
+----------
+Treino Perda: 0.0176 Acurácia: 0.9931 (1.8310 segundos) 
+Val Perda: 0.1754 Acurácia: 0.9722 (0.9243 segundos) 
+Tempo: 44s
+
+Época 12/14
+----------
+Treino Perda: 0.0173 Acurácia: 0.9931 (1.7315 segundos) 
+Val Perda: 0.1723 Acurácia: 0.9722 (0.6036 segundos) 
+Tempo: 46s
+
+Época 13/14
+----------
+Treino Perda: 0.0102 Acurácia: 0.9931 (1.1460 segundos) 
+Val Perda: 0.0487 Acurácia: 0.9722 (0.6127 segundos) 
+Tempo: 48s
+
+Época 14/14
+----------
+Treino Perda: 0.0022 Acurácia: 1.0000 (1.1471 segundos) 
+Val Perda: 0.2001 Acurácia: 0.9444 (0.6237 segundos) 
+Tempo: 50s
+
+Treinamento completo em 0m 50s
+Número de épocas: 15. Tamanho do batch: 32
+Melhor perda de validação: 0.0487 Melhor acurácia de validação: 0.9722
+
+Matriz de Confusão:
+[[18  0]
+ [ 2 16]]
+
+Relatório de Classificação:
+              precision    recall  f1-score   support
+
+    IMMATURE     0.9000    1.0000    0.9474        18
+      MATURE     1.0000    0.8889    0.9412        18
+
+    accuracy                         0.9444        36
+   macro avg     0.9500    0.9444    0.9443        36
+weighted avg     0.9500    0.9444    0.9443        36
+
