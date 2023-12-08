@@ -52,30 +52,25 @@ Em seguida, rode o script <strong style="font-style: italic;">treatment.py</stro
 <p>Este estudo investigou o desempenho das redes neurais VGG16 e AlexNet, concentrando-se na avaliação sistemática do impacto do treinamento nas métricas de acurácia de validação em arquiteturas distintas de redes neurais convolucionais (CNN). Os resultados são analisados considerando a evolução dessas métricas ao longo do processo de treinamento.
 <h4>A. AlexNet</h4>
 Durante o treinamento da AlexNet, observamos uma melhoria significativa ao longo de três épocas. Inicialmente, a perda de treinamento foi de 0.7989, com uma acurácia de 62.50%. Ao término das três épocas, a perda de treinamento reduziu para 0.1643, alcançando uma acurácia de 93.75%.
-<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/acuracia_alexnet.png" alt="Acuracia ALEXNET" />
 </p>
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/acuracia_alexnet.png" alt="Acuracia ALEXNET" />
 <p>
 Na fase de validação, a perda inicial foi de 0.3470, com uma acurácia de 86,11%, evoluindo para 0.1054 de perda e 94,44% de acurácia.
-
-<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/loss_alexnet.png" alt="LOSS ALEXNET" />
 </p>
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/loss_alexnet.png" alt="LOSS ALEXNET" />
 <p>
 A matriz de confusão revelou que o modelo classificou corretamente os grãos maduros e imaturos, atingindo uma precisão global de 94,44%.
-<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/matriz_confusão_alexnet.png" alt="Matriz de confusão ALEXNET" />
 </p>
-
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/matriz_confusão_alexnet.png" alt="Matriz de confusão ALEXNET" />
 <h3>B. VGG16</h3>
 <p>
 O treinamento da VGG16 também apresentou uma evolução notável ao longo de três épocas. Inicialmente, a perda de treinamento foi de 0.6173, com uma acurácia de 65.28\%, atingindo uma perda final de 0.0785 e uma acurácia de 96.53
-
+</p>
 <img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/acuracia_vgg16.png" alt="Acuracia VGG16" />
-</p>
-
 <p>Na validação, a perda inicial foi de 0.2799, com uma acurácia de 94.44%, evoluindo para 0.0868 de perda e 97.22% de acurácia.
-  <img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/loss_vgg16.png" alt="LOSS VGG16" />
 </p>
-
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/loss_vgg16.png" alt="LOSS VGG16" />
 <p>
 A matriz de confusão indicou um desempenho excepcional, com 100% de precisão na classificação de ambos os tipos de grãos. O modelo VGG16 demonstrou uma precisão global de 97.22
-  <img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/matriz_confusão_vgg16.png" alt="LOSS VGG16" />
 </p>
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/matriz_confusão_vgg16.png" alt="LOSS VGG16" />
