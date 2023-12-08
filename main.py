@@ -278,7 +278,7 @@ if __name__ == "__main__":
             'batch_size': 32,
             'lr': 0.001,
             'mm': 0.9,
-            'epochs': 2,
+            'epochs': 15,
             'model_name': model,
             'criterion': nn.CrossEntropyLoss()
         }

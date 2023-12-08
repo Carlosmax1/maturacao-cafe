@@ -1,5 +1,5 @@
 <p align=center>
-<img  style="display: block; margin: 0 auto"  width=200px heigth=200px src="brasao.gif" alt="Brasão Universidade Federal de Viçosa" />
+<img  style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/brasao.gif" alt="Brasão Universidade Federal de Viçosa" />
 <h1 align=center>Universidade Federal de Viçosa</h1>
 </p>
 <p align=center><i>Campus</i> Rio Paranaíba<br> Curso: Sistemas de Informação <br> Disciplina SIN 323 - Inteligência Artificial
@@ -30,23 +30,52 @@ O projeto foi feito com a linguagem de programação <strong>Python</strong> na 
   Após a instalação do Python em sua versão 3.8.10, faça o clone do repositório para sua máquina com o comando:
   <pre align=center>git clone https://github.com/Carlosmax1/maturacao-cafe.git</pre>
 </li>
-
+<br>
 <li>
   Dentro a pasta onde foi clonado o repositório abra o terminal e digite o comando para instalar todas as dependências.
-  <pre align=center>
-    !pip install -r requirements.txt
-  </pre>
+  <pre align=center>!pip install -r requirements.txt</pre>
 </li>
+<br>
 <li>
 Em seguida, rode o script <strong style="font-style: italic;">treatment.py</strong> para separação do dataset para treino e teste 
- <pre align=center>
-    python3 treatment.py
-  </pre>
+ <pre align=center>python3 treatment.py</pre>
 </li>
-
+<br>
 <li>
-  Após concluir os passos anteriores, basta executar o <strong style="font-style: italic;">main.py</strong> para treinar a IA. Após o treino, a pasta <span style="font-style:italic;">outputs</span> que haverá todos os relátorios do treinamento feito.
-  <pre align=center>
-    python3 main.py
-  </pre>
+  Após concluir os passos anteriores, basta executar o <strong style="font-style: italic;">main.py</strong> para treinar a IA. Os relatórios do treinamento serão armazenados na pasta <span style="font-style:italic;">outputs</span>
+  <pre align=center>python3 main.py</pre>
 </li>
+<br>
+<hr>
+
+<h3>3. Resultados:</h3>
+<p>Este estudo investigou o desempenho das redes neurais VGG16 e AlexNet, concentrando-se na avaliação sistemática do impacto do treinamento nas métricas de acurácia de validação em arquiteturas distintas de redes neurais convolucionais (CNN). Os resultados são analisados considerando a evolução dessas métricas ao longo do processo de treinamento.
+<h4>A. AlexNet</h4>
+Durante o treinamento da AlexNet, observamos uma melhoria significativa ao longo de três épocas. Inicialmente, a perda de treinamento foi de 0.7989, com uma acurácia de 62.50%. Ao término das três épocas, a perda de treinamento reduziu para 0.1643, alcançando uma acurácia de 93.75%.
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/acuracia_alexnet.png" alt="Acuracia ALEXNET" />
+</p>
+<p>
+Na fase de validação, a perda inicial foi de 0.3470, com uma acurácia de 86,11%, evoluindo para 0.1054 de perda e 94,44% de acurácia.
+
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/loss_alexnet.png" alt="LOSS ALEXNET" />
+</p>
+<p>
+A matriz de confusão revelou que o modelo classificou corretamente os grãos maduros e imaturos, atingindo uma precisão global de 94,44%.
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/matriz_confusão_alexnet.png" alt="Matriz de confusão ALEXNET" />
+</p>
+
+<h3>B. VGG16</h3>
+<p>
+O treinamento da VGG16 também apresentou uma evolução notável ao longo de três épocas. Inicialmente, a perda de treinamento foi de 0.6173, com uma acurácia de 65.28\%, atingindo uma perda final de 0.0785 e uma acurácia de 96.53
+
+<img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/acuracia_vgg16.png" alt="Acuracia VGG16" />
+</p>
+
+<p>Na validação, a perda inicial foi de 0.2799, com uma acurácia de 94.44%, evoluindo para 0.0868 de perda e 97.22% de acurácia.
+  <img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/loss_vgg16.png" alt="LOSS VGG16" />
+</p>
+
+<p>
+A matriz de confusão indicou um desempenho excepcional, com 100% de precisão na classificação de ambos os tipos de grãos. O modelo VGG16 demonstrou uma precisão global de 97.22
+  <img  align=center style="display: block; margin: 0 auto"  width=200px heigth=200px src="images/matriz_confusão_vgg16.png" alt="LOSS VGG16" />
+</p>
